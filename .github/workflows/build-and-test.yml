@@ -30,8 +30,8 @@ jobs:
       - name: Run Tests
         run: |
           docker run --rm ghcr.io/charlyrousseau/snippet-django:${{ github.sha }} python manage.py test
-
       - name: Push Docker image
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push ghcr.io/charlyrousseau/snippet-django:${{ github.sha }}
           docker push ghcr.io/charlyrousseau/snippet-django:latest
