@@ -8,11 +8,13 @@ certifi==2024.6.2
 channels==4.1.0
 charset-normalizer==3.3.2
 distro==1.9.0
+dj-database-url==2.2.0
 Django==5.0.6
 django-filter==24.2
 django-sass-processor==1.4.1
 frozenlist==1.4.1
 greenlet==3.0.3
+gunicorn==22.0.0
 h11==0.14.0
 httpcore==1.0.5
 httpx==0.27.0
@@ -30,6 +32,7 @@ openai==1.35.7
 orjson==3.10.5
 packaging==24.1
 pillow==10.3.0
+psycopg2-binary==2.9.9
 pydantic==2.7.4
 pydantic_core==2.18.4
 python-dotenv==1.0.1
@@ -45,4 +48,3 @@ tqdm==4.66.4
 typing_extensions==4.12.2
 urllib3==2.2.2
 yarl==1.9.4
-gunicorn
