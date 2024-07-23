@@ -18,6 +18,9 @@ spec:
         - name: collectstatic
           image: ghcr.io/charlyrousseau/snippet-django:latest
           command: ["python", "manage.py", "collectstatic", "--noinput"]
+          volumeMounts:
+            - name: static-files
+              mountPath: /app/staticfiles
       containers:
         - name: snippet-django
           image: ghcr.io/charlyrousseau/snippet-django:latest
