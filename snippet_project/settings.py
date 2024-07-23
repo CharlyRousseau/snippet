@@ -20,7 +20,7 @@ SECRET_KEY = "django-insecure-)esj&iv!ciu8c+)-j@2m4gjs1)id!m6duc6%6u&+r2$$^i^%@5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["snippet.playground-charly.fr","127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["snippet.playground-charly.fr", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -70,7 +70,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "snippet_project.wsgi.application"
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = "/app/staticfiles/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
