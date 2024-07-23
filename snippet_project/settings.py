@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from django.conf.urls import handler404
+from django.conf.urls import handler400, handler404, handler403, handler500
 import os
 from dotenv import load_dotenv
 import mimetypes
@@ -140,6 +140,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 AUTH_USER_MODEL = "snippet.CustomUser"
 LOGIN_REDIRECT_URL = "/"
 
-# 404 Handling
+# 4XX/5XX Handling
 
-handler404 = "snippet.view.custom_404"
+handler400 = "snippet.view.custom_bad_request"
+handler403 = "snippet.view.custom_permission_denied"
+handler404 = "snippet.view.custom_page_not_found"
+handler500 = "snippet.view.custom_internal_error"

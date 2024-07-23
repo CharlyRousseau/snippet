@@ -17,6 +17,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied, BadRequest
 
 
 # FilterViews
@@ -95,11 +96,25 @@ def update_profile(request, username):
     return render(request, "snippet/edit_profile.html", {"form": form})
 
 
-# Custom 404 Handling
+# 4XX/5XX Handling
 
+def custom_bad_request(request, exception):
+    return render(request, "400.html", status=400)
 
-def custom_404(request, exception):
+def custom_permission_denied(request, exception):
+    return render(request, "403.html", status=403)
+
+def custom_page_not_found(request, exception):
     return render(request, "404.html", status=404)
+
+def custom_internal_error(request, exception):
+    return render(request, "500.html", status=500)
+
+def test_403(request):
+    raise PermissionDenied
+
+def test_400(request):
+    raise BadRequest
 
 
 @login_required
