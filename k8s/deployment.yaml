@@ -14,15 +14,15 @@ spec:
       labels:
         app: snippet
     spec:
+      initContainers:
+        - name: collectstatic
+          image: ghcr.io/charlyrousseau/snippet-django:latest
+          command: ["python", "manage.py", "collectstatic", "--noinput"]
       containers:
         - name: snippet-django
           image: ghcr.io/charlyrousseau/snippet-django:latest
           ports:
             - containerPort: 8000
-          initContainers:
-            - name: collectstatic
-              image: ghcr.io/charlyrousseau/snippet-django:latest
-              command: ["python", "manage.py", "collectstatic", "--noinput"]
           volumeMounts:
             - name: static-files
               mountPath: /app/staticfiles

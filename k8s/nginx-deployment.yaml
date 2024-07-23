@@ -30,5 +30,8 @@ spec:
         - name: nginx-config-volume
           configMap:
             name: snippet-nginx-config
+        - name: static-files
+          persistentVolumeClaim:
+            claimName: snippet-static-pvc
       imagePullSecrets:
         - name: ghcr-secret
