@@ -35,7 +35,7 @@ data:
             }
 
             location /static/ {
-                alias /app/static/;
+                alias /app/staticfiles/;
                 expires 30d;
                 add_header Cache-Control "public, must-revalidate, proxy-revalidate";
             }
