@@ -17,11 +17,25 @@ data:
     }
 
     http {
-
         include       mime.types;
         default_type  application/octet-stream;
 
         access_log  /var/log/nginx/access.log;
+
+        types {
+            text/html  html htm shtml;
+            text/css   css;
+            text/xml   xml;
+            image/gif  gif;
+            image/jpeg jpg jpeg;
+            application/javascript js;
+            application/atom+xml   atom;
+            application/rss+xml    rss;
+            font/ttf   ttf;
+            font/otf   otf;
+            font/woff  woff;
+            font/woff2 woff2;
+        }
 
         server {
             listen 80;
@@ -39,21 +53,5 @@ data:
                 expires 30d;
                 add_header Cache-Control "public, must-revalidate, proxy-revalidate";
             }
-
-
-                types {
-                    text/html  html htm shtml;
-                    text/css   css;
-                    text/xml   xml;
-                    image/gif  gif;
-                    image/jpeg jpg jpeg;
-                    application/javascript js;
-                    application/atom+xml   atom;
-                    application/rss+xml    rss;
-                    font/ttf   ttf;
-                    font/otf   otf;
-                    font/woff  woff;
-                    font/woff2 woff2;
-                }
-
-            }
+        }
+    }
