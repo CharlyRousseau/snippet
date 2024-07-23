@@ -63,7 +63,6 @@ def snippet_detail(request, pk):
     return render(request, "snippet/snippet_detail.html", {"snippet": snippet})
 
 
-@login_required
 def signup(request):
     if request.user.is_authenticated:
         return redirect(reverse("home"))  # Redirect to your home URL name
