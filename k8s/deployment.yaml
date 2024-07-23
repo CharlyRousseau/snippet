@@ -21,7 +21,7 @@ spec:
             - containerPort: 8000
           volumeMounts:
             - name: static-files
-              mountPath: /app/static
+              mountPath: /app/staticfiles
           env:
             - name: DJANGO_SETTINGS_MODULE
               value: "snippet_project.settings"
