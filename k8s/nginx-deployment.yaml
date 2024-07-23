@@ -23,7 +23,7 @@ spec:
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
-            - name: staticfiles
+            - name: static-files
               mountPath: /app/staticfiles
 
       volumes:
