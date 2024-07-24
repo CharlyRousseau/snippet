@@ -1,20 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from langchain_core.messages.base import BaseMessage
 from snippet.admin import CustomUserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import CustomUser, languages, Snippet
+from .models import CustomUser, languages, LikedSnippets, Snippet
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy, reverse
 from .forms import SnippetSaveForm, UserEditForm
 from .models import CustomUser, Snippet
 import django_filters
 import re
+from django.http import JsonResponse
 from django.conf import settings
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, BadRequest
@@ -45,20 +42,55 @@ def snippet_filter_list(request):
     return render(request, "snippet/snippet_filter_list.html", {"filter": f})
 
 
+@login_required
+def like_snippet(request, snippet_id):
+    # First, get tje snippet
+    snippet = get_object_or_404(Snippet, id=snippet_id)
+    # Then, verify if we already liked this snippet or not (verify if the snippet is present in the LikedSnippet)
+    liked = LikedSnippets.objects.filter(user=request.user).first()
+    is_snippet_liked = False
+
+    if liked:
+        # LikedSnippet already exists, we just need to verify if the snippet is liked or not
+        is_snippet_liked = liked.snippets_liked.filter(id=snippet_id).exists()
+
+        if is_snippet_liked:
+            snippet.num_like -= 1
+            is_snippet_liked = False
+            liked.snippets_liked.remove(snippet)
+        else:
+            snippet.num_like += 1
+            is_snippet_liked = True
+            liked.snippets_liked.add(snippet)
+
+    else:
+        liked = LikedSnippets.objects.create(user=request.user)
+        snippet.num_like += 1
+        is_snippet_liked = True
+        liked.snippets_liked.add(snippet)
+
+    snippet.save()
+    liked.save()
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
+    return redirect('home')
+
 # Views
 
-
 def home(request):
-    return render(request, "snippet/home.html")
-
+    snippets = Snippet.objects.all()
+    return render(request, "snippet/home.html", {'snippets': snippets})
 
 @login_required
-def snippet_list(request):
-    snippets = Snippet.objects.filter(author=request.user)
-    return render(request, "snippet/snippet_list.html", {"snippets": snippets})
+def liked_snippet_list(request):
+    liked = LikedSnippets.objects.filter(user=request.user).first()
+    if liked:
+        snippets = liked.snippets_liked.all()
+        return render(request, "snippet/liked_snippet_list.html", {"snippets": snippets})
+    else:
+        return redirect("home")
 
-
-# @login_required
 def snippet_detail(request, pk):
     snippet = get_object_or_404(Snippet, pk=pk)
     return render(request, "snippet/snippet_detail.html", {"snippet": snippet})

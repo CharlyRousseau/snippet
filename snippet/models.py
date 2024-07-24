@@ -40,6 +40,16 @@ class Snippet(models.Model):
     code = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     language = models.CharField(choices=languages, max_length=100, default="plaintext")
+    num_like = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
+    
+class LikedSnippets(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    snippets_liked = models.ManyToManyField(
+        Snippet, related_name="shared_snippets", blank=True
+    )
+
+    def __str__(self) -> str:
+        return self.user.username

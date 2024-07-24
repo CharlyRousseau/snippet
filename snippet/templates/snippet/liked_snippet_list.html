@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Snippets Liked{% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet"  type="text/css" href="{% static 'snippet/list.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="main-container">
+        <div class="snippet-container">
+            {% if snippets %}
+                {% for snippet in snippets %}
+                    <a href="{% url 'snippet_detail' snippet.pk %}">
+                        <div class="snippet">
+                            {{ snippet.title }} <br />
+                        </div >
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p>No Snippets Liked !</p>
+            {% endif %}
+        </div >
+    </div>
+{% endblock %}
