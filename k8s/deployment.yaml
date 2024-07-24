@@ -39,7 +39,7 @@ spec:
                 secretKeyRef:
                   name: snippet-secrets
                   key: database_url
-            - name: MINIO_ENDPOINT-URL
+            - name: MINIO_ENDPOINT_URL
               value: "https://minio-api.playground-charly.fr"
             - name: MINIO_BUCKET_NAME
               value: "test"
