@@ -7,4 +7,6 @@ spec:
     - ReadWriteMany
   capacity:
     storage: 10Gi
+  hostPath:
+    path: /mnt/data/snippet-media
   storageClassName: local-path
