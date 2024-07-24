@@ -40,7 +40,7 @@ spec:
                   name: snippet-secrets
                   key: database_url
             - name: MINIO_ENDPOINT-URL
-              value: "http://minio.minio.svc.cluster.local:9000"
+              value: "https://minio-api.playground-charly.fr"
             - name: MINIO_BUCKET_NAME
               value: "test"
             - name: MINIO_ACCESS_KEY
