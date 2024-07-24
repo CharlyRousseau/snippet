@@ -17,6 +17,7 @@ urlpatterns = [
     path("generate/", views.generate_snippet, name="generate_snippet"),
     path("liked/", views.liked_snippet_list, name="liked_snippet_list"),
     path('like/<int:snippet_id>/', views.like_snippet, name='like_snippet'),
+    path('is_liked/<int:snippet_id>', views.is_snippet_liked, name='is_snippet_liked'),
 ]
 
 # 4XX/5XX Handling

@@ -41,10 +41,22 @@ def snippet_filter_list(request):
     f = SnippetFilter(request.GET, queryset=Snippet.objects.all())
     return render(request, "snippet/snippet_filter_list.html", {"filter": f})
 
+@login_required
+def is_snippet_liked(request, snippet_id):
+    snippet = get_object_or_404(Snippet, id=snippet_id)
+    liked = LikedSnippets.objects.filter(user=request.user).first()
+    is_snippet_liked = False
+
+    if liked:
+        # LikedSnippet already exists, we just need to verify if the snippet is liked or not
+        is_snippet_liked = liked.snippets_liked.filter(id=snippet_id).exists()
+        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
+    else:
+        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
 
 @login_required
 def like_snippet(request, snippet_id):
-    # First, get tje snippet
+    # First, get the snippet
     snippet = get_object_or_404(Snippet, id=snippet_id)
     # Then, verify if we already liked this snippet or not (verify if the snippet is present in the LikedSnippet)
     liked = LikedSnippets.objects.filter(user=request.user).first()

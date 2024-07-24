@@ -45,6 +45,26 @@
 {% block extra_scripts %}
 <script>
     $(document).ready(function() {
+        // Iterate over each button with the class 'like-button'
+        $('.like-button').each(function() {
+            var snippetId = $(this).data('id');
+            console.log(snippetId);
+            
+            // Perform AJAX call for each button
+            $.ajax({
+                url: "{% url 'is_snippet_liked' snippet_id=0 %}".replace('0', snippetId),
+                type: 'POST',
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    $('#likes-' + snippetId).text(response.likes);
+                    $('#like-btn-' + snippetId).text(response.is_liked ? "Dislike" : "Like");
+                }
+            });
+        });
+
         $('.like-button').click(function() {
             var snippetId = $(this).data('id');
             $.ajax({
