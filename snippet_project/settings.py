@@ -143,9 +143,31 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media Configuration
+IS_PRODUCTION = os.getenv("DJANGO_PRODUCTION", "False") == "True"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+if IS_PRODUCTION:
+    # Production settings (using MinIO or S3)
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+    AWS_ACCESS_KEY_ID = os.getenv("MINIO_ACCESS_KEY")
+    AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_SECRET_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME")
+
+    # Ensure this matches your MinIO service URL in Kubernetes
+    AWS_S3_ENDPOINT_URL = os.getenv("MINIO_ENDPOINT_URL", "http://minio:9000")
+
+    # Optional settings for MinIO/S3
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+
+    # MEDIA_URL should not include the bucket name directly
+    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
+else:
+    # Local development settings (using local filesystem)
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Extending User
 

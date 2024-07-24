@@ -29,9 +29,9 @@ spec:
           volumeMounts:
             - name: static-files
               mountPath: /app/staticfiles
-            - name: media-files
-              mountPath: /app/media
           env:
+            - name: DJANGO_PRODUCTION
+              value: "True"
             - name: DJANGO_SETTINGS_MODULE
               value: "snippet_project.settings"
             - name: DATABASE_URL
@@ -39,12 +39,23 @@ spec:
                 secretKeyRef:
                   name: snippet-secrets
                   key: database_url
+            - name: MINIO_ENDPOINT
+              value: "minio.playground-charly.fr"
+            - name: MINIO_PORT
+              value: "9000"
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secrets
+                  key: access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secrets
+                  key: secret_key
       volumes:
         - name: static-files
           persistentVolumeClaim:
             claimName: snippet-static-pvc
-        - name: media-files
-          persistentVolumeClaim:
-            claimName: media-pvc
       imagePullSecrets:
         - name: ghcr-secret
