@@ -39,10 +39,10 @@ spec:
                 secretKeyRef:
                   name: snippet-secrets
                   key: database_url
-            - name: MINIO_ENDPOINT
-              value: "minio.playground-charly.fr"
-            - name: MINIO_PORT
-              value: "9000"
+            - name: MINIO_ENDPOINT-URL
+              value: "http://minio.minio.svc.cluster.local:9000"
+            - name: MINIO_BUCKET_NAME
+              value: "test"
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:

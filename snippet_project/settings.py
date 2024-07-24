@@ -152,11 +152,7 @@ if IS_PRODUCTION:
     AWS_ACCESS_KEY_ID = os.getenv("MINIO_ACCESS_KEY")
     AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_SECRET_KEY")
     AWS_STORAGE_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME")
-
-    # Ensure this matches your MinIO service URL in Kubernetes
-    AWS_S3_ENDPOINT_URL = os.getenv("MINIO_ENDPOINT_URL", "http://minio:9000")
-
-    # Optional settings for MinIO/S3
+    AWS_S3_ENDPOINT_URL = os.getenv("MINIO_ENDPOINT_URL")
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False
