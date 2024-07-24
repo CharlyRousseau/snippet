@@ -18,6 +18,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, BadRequest
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # FilterViews
@@ -98,20 +101,27 @@ def update_profile(request, username):
 
 # 4XX/5XX Handling
 
+
 def custom_bad_request(request, exception):
     return render(request, "400.html", status=400)
+
 
 def custom_permission_denied(request, exception):
     return render(request, "403.html", status=403)
 
+
 def custom_page_not_found(request, exception):
     return render(request, "404.html", status=404)
 
-def custom_internal_error(request, exception):
-    return render(request, "500.html", status=500)
+
+def custom_internal_error(request, exception=None):
+    logger.error("Internal Server Error: %s", exception, exc_info=True)
+    return render(request, "500.html", {"error": exception}, status=500)
+
 
 def test_403(request):
     raise PermissionDenied
+
 
 def test_400(request):
     raise BadRequest
@@ -174,7 +184,7 @@ def generate_snippet(request):
                         r"^```(?:\w+)?\n(.*)\n```$", re.DOTALL
                     )
 
-                    match = code_block_pattern.match(snippetGenerated) # type: ignore
+                    match = code_block_pattern.match(snippetGenerated)  # type: ignore
 
                     if match:
                         snippet_content = match.group(1).strip()

@@ -176,3 +176,22 @@ handler400 = "snippet.view.custom_bad_request"
 handler403 = "snippet.view.custom_permission_denied"
 handler404 = "snippet.view.custom_page_not_found"
 handler500 = "snippet.view.custom_internal_error"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "/path/to/your/django/error.log",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    },
+}
