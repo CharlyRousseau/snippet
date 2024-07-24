@@ -25,7 +25,8 @@ spec:
               subPath: nginx.conf
             - name: static-files
               mountPath: /app/staticfiles
-
+            - name: media-files
+              mountPath: /app/media
       volumes:
         - name: nginx-config-volume
           configMap:
@@ -33,5 +34,8 @@ spec:
         - name: static-files
           persistentVolumeClaim:
             claimName: snippet-static-pvc
+        - name: media-files
+          persistentVolumeClaim:
+            claimName: media-pvc
       imagePullSecrets:
         - name: ghcr-secret
