@@ -44,6 +44,11 @@ spec:
                 secretKeyRef:
                   name: snippet-secrets
                   key: database_url
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snippet-secrets
+                  key: OPENAI_API_KEY
             - name: MINIO_ENDPOINT_URL
               value: "https://minio-api.playground-charly.fr"
             - name: MINIO_BUCKET_NAME
