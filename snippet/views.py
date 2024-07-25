@@ -234,27 +234,41 @@ def generate_snippet(request):
                 model = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key=api_key)
 
                 TEMPLATE_PROMPT = """
-                Answer the user query.
+                You are an advanced AI programming assistant with expertise in multiple programming languages and various problem domains. Your primary task is to generate accurate, efficient, and well-documented code snippets based on the user query.
 
-                You are a programming assistant. the only response you are able to give is code.
+                ### User Query:
                 \n{query}\n
+
+                ### Response Guidelines:
+                1. **Code Only**: Provide only the relevant code snippet as your response.
+                2. **Language**: Ensure the code is written in the specified programming language: {language}.
+                3. **Problem Type**: Address the specific problem type: {problem_type}.
+                4. **Explanation**: Adhere to the detailed explanation provided for the task: {explanation}.
+                5. **Comments**: Include necessary comments to explain complex logic within the code.
+                6. **Edge Cases**: Consider and handle potential edge cases within the code.
+                7. **Optimization**: Ensure the code is optimized for performance and follows best practices.
+                8. **Readability**: Maintain code readability and follow the conventions of the specified language.
+                9. **Testing**: If applicable, include basic tests or examples to demonstrate the code's functionality.
+
+
+                The only response you are able to give is the final snippet content.
                 """
                 query = f"Generate a {problem_type} snippet in {language} that {explanation}."
 
                 prompt = PromptTemplate(
                     template=TEMPLATE_PROMPT,
-                    input_variables=["query"],
+                    input_variables=["query", "language", "problem_type", "explanation"],
                 )
                 chain = prompt | model
-         
+
                 try:
-                    response = chain.invoke({"query": query})
+                    response = chain.invoke({"query": query, "language": language, "problem_type": problem_type, "explanation": explanation})
 
                     snippetGenerated = response.content
                     code_block_pattern = re.compile(
                         r"^```(?:\w+)?\n(.*)\n```$", re.DOTALL
                     )
-                  
+
                     match = code_block_pattern.match(snippetGenerated)  # type: ignore
 
                     if match:
@@ -285,11 +299,7 @@ def generate_snippet(request):
                     return redirect(reverse("generate_snippet"))
         else:
             snippet_form = SnippetSaveForm(request.POST)
-            print(snippet_form.data)
-            print("-------------------")
-            print(snippet_form.errors)
             if snippet_form.is_valid():
-                print("oui")
                 snippet_instance = snippet_form.save(commit=True)
                 snippet_instance.author = request.user
                 snippet_instance.save()
