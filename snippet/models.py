@@ -40,10 +40,16 @@ class Snippet(models.Model):
     code = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     language = models.CharField(choices=languages, max_length=100, default="plaintext")
+    generation_failed = models.BooleanField(default=False)
+    attempts = models.IntegerField(default=0)
     num_like = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
+    def retry_generation(self):
+        self.attempts += 1
+        self.generation_failed = False
+        self.save()
     
 class LikedSnippets(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

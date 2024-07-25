@@ -250,37 +250,46 @@ def generate_snippet(request):
 
                     if match:
                         snippet_content = match.group(1).strip()
-
-                    snippet = Snippet(
-                        author=request.user, language=language, code=snippet_content
-                    )
-
-                    context = {
-                        "snippet": snippet,
-                        "form": form,
-                        "snippet_form": SnippetSaveForm(
-                            initial={"language": language, "code": snippet_content}
-                        ),
-                    }
-
-                    return render(request, "snippet/generated_snippet.html", context)
+                        snippet = Snippet(
+                            author=request.user, language=language, code=snippet_content
+                        )
+                        context = {
+                            "snippet": snippet,
+                            "form": form,
+                            "snippet_form": SnippetSaveForm(
+                                initial={"language": language, "code": snippet_content}
+                            ),
+                        }
+                        return render(request, "snippet/generated_snippet.html", context)
+                    else:
+                        raise ValueError("Code block not found in the response.")
 
                 except Exception as e:
-                    snippet = f"Error generating snippet: {str(e)}"
+                    request.session['prompt_data'] = {
+                        'language': language,
+                        'problem_type': problem_type,
+                        'explanation': explanation
+                    }
+                    messages.error(request, "An error occurred while generating the snippet. Please try again.")
+                    return redirect('generation_error')
+
         else:
             snippet_form = SnippetSaveForm(request.POST)
-            print(snippet_form.data)
-            print("-------------------")
-            print(snippet_form.errors)
             if snippet_form.is_valid():
-                print("oui")
-                snippet_instance = snippet_form.save(commit=True)
+                snippet_instance = snippet_form.save(commit=False)
                 snippet_instance.author = request.user
                 snippet_instance.save()
-
                 messages.success(request, "Snippet saved successfully!")
-
                 return redirect("snippet_filter_list")
+
+    if 'prompt_data' in request.session:
+        prompt_data = request.session['prompt_data']
+        form = SnippetGenerationForm(initial=prompt_data)
+        del request.session['prompt_data']
 
     context = {"form": form, "snippet": snippet, "snippet_form": SnippetSaveForm()}
     return render(request, "snippet/generate_snippet.html", context)
+
+@login_required
+def generation_error(request):
+    return render(request, 'snippet/generation_error.html')

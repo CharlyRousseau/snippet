@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur de Génération{% endblock %}
+{% block content %}
+    <div class="body">
+        <h1>Erreur de Génération</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <a href="{% url 'generate_snippet' %}" class="retry-btn">Réessayer</a>
+    </div>
+{% endblock %}
