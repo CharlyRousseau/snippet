@@ -44,6 +44,7 @@ def snippet_filter_list(request):
     f = SnippetFilter(request.GET, queryset=Snippet.objects.all())
     return render(request, "snippet/snippet_filter_list.html", {"filter": f})
 
+
 @login_required
 def is_snippet_liked(request, snippet_id):
     snippet = get_object_or_404(Snippet, id=snippet_id)
@@ -53,9 +54,10 @@ def is_snippet_liked(request, snippet_id):
     if liked:
         # LikedSnippet already exists, we just need to verify if the snippet is liked or not
         is_snippet_liked = liked.snippets_liked.filter(id=snippet_id).exists()
-        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
+        return JsonResponse({"likes": snippet.num_like, "is_liked": is_snippet_liked})
     else:
-        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
+        return JsonResponse({"likes": snippet.num_like, "is_liked": is_snippet_liked})
+
 
 @login_required
 def like_snippet(request, snippet_id):
@@ -86,25 +88,31 @@ def like_snippet(request, snippet_id):
 
     snippet.save()
     liked.save()
-    
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'likes': snippet.num_like, 'is_liked': is_snippet_liked})
-    return redirect('home')
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"likes": snippet.num_like, "is_liked": is_snippet_liked})
+    return redirect("home")
+
 
 # Views
 
+
 def home(request):
     snippets = Snippet.objects.all()
-    return render(request, "snippet/home.html", {'snippets': snippets})
+    return render(request, "snippet/home.html", {"snippets": snippets})
+
 
 @login_required
 def liked_snippet_list(request):
     liked = LikedSnippets.objects.filter(user=request.user).first()
     if liked:
         snippets = liked.snippets_liked.all()
-        return render(request, "snippet/liked_snippet_list.html", {"snippets": snippets})
+        return render(
+            request, "snippet/liked_snippet_list.html", {"snippets": snippets}
+        )
     else:
         return redirect("home")
+
 
 def snippet_detail(request, pk):
     snippet = get_object_or_404(Snippet, pk=pk)
@@ -123,9 +131,13 @@ def signup(request):
             user = authenticate(username=user.username, password=raw_password)
             if user is not None:
                 login(request, user)
-                return redirect(reverse("snippet_list"))
+                return redirect(reverse("snippet_filter_list"))
             else:
-                return render(request, "registration/signup.html", {"form": form, "error": "Authentication failed"})
+                return render(
+                    request,
+                    "registration/signup.html",
+                    {"form": form, "error": "Authentication failed"},
+                )
         else:
             return render(request, "registration/signup.html", {"form": form})
     else:
