@@ -40,8 +40,6 @@ class Snippet(models.Model):
     code = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     language = models.CharField(choices=languages, max_length=100, default="plaintext")
-    generation_failed = models.BooleanField(default=False)
-    attempts = models.IntegerField(default=0)
     num_like = models.PositiveIntegerField(default=0)
 
     def __str__(self):
