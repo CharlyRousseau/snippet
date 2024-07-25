@@ -30,12 +30,7 @@ jobs:
       - name: Run Tests
         run: |
           docker run --rm ghcr.io/charlyrousseau/snippet-django:${{ github.sha }} python manage.py test
-      
-      - name: Update .env File
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-    
+
       - name: Push Docker image
         if: github.ref == 'refs/heads/main'
         run: |
