@@ -214,6 +214,12 @@ def generate_snippet(request):
     form = SnippetGenerationForm()
     snippet = None
     snippet_content = ""
+    
+    if 'prompt_data' in request.session:
+        prompt_data = request.session['prompt_data']
+        form = SnippetGenerationForm(initial=prompt_data)
+        del request.session['prompt_data']  
+        context = {"form": form, "snippet": snippet, "snippet_form": SnippetSaveForm()}
 
     if request.method == "POST":
         if "generate_snippet" in request.POST:
@@ -271,6 +277,11 @@ def generate_snippet(request):
 
                 except Exception as e:
                     messages.error(request, "Une erreur s'est produite. Veuillez réessayer. \n " + str(e))
+                    request.session['prompt_data'] = {
+                        'language': language,
+                        'problem_type': problem_type,
+                        'explanation': explanation
+                    }
                     return redirect(reverse("generate_snippet"))
         else:
             snippet_form = SnippetSaveForm(request.POST)
