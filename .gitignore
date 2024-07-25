@@ -6,5 +6,5 @@ snippet/migrations/__pycache__/
 media
 .env
 staticfiles/
-```
 dev-env
+/venv

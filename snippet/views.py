@@ -91,7 +91,7 @@ def like_snippet(request, snippet_id):
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"likes": snippet.num_like, "is_liked": is_snippet_liked})
-    return redirect("home")
+    return redirect(reverse("home"))
 
 
 # Views
@@ -111,7 +111,7 @@ def liked_snippet_list(request):
             request, "snippet/liked_snippet_list.html", {"snippets": snippets}
         )
     else:
-        return redirect("home")
+        return redirect(reverse("home"))
 
 
 def snippet_detail(request, pk):
@@ -154,7 +154,8 @@ def update_profile(request, username):
         form = UserEditForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect("profile")
+    
+            return redirect(reverse("profile"))
     else:
         form = UserEditForm(instance=user)
 
@@ -223,6 +224,7 @@ def generate_snippet(request):
                 explanation = form.cleaned_data["explanation"]
 
                 api_key = settings.OPENAI_API_KEY
+        
                 model = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key=api_key)
 
                 TEMPLATE_PROMPT = """
@@ -238,23 +240,25 @@ def generate_snippet(request):
                     input_variables=["query"],
                 )
                 chain = prompt | model
-
+         
                 try:
                     response = chain.invoke({"query": query})
+
                     snippetGenerated = response.content
                     code_block_pattern = re.compile(
                         r"^```(?:\w+)?\n(.*)\n```$", re.DOTALL
                     )
-
+                  
                     match = code_block_pattern.match(snippetGenerated)  # type: ignore
 
                     if match:
                         snippet_content = match.group(1).strip()
+                    
 
                     snippet = Snippet(
                         author=request.user, language=language, code=snippet_content
                     )
-
+                
                     context = {
                         "snippet": snippet,
                         "form": form,
@@ -266,7 +270,8 @@ def generate_snippet(request):
                     return render(request, "snippet/generated_snippet.html", context)
 
                 except Exception as e:
-                    snippet = f"Error generating snippet: {str(e)}"
+                    messages.error(request, "Une erreur s'est produite. Veuillez réessayer. \n " + str(e))
+                    return redirect(reverse("generate_snippet"))
         else:
             snippet_form = SnippetSaveForm(request.POST)
             print(snippet_form.data)
@@ -280,7 +285,8 @@ def generate_snippet(request):
 
                 messages.success(request, "Snippet saved successfully!")
 
-                return redirect("snippet_filter_list")
+    
+                return redirect(reverse("snippet_filter_list"))
 
     context = {"form": form, "snippet": snippet, "snippet_form": SnippetSaveForm()}
     return render(request, "snippet/generate_snippet.html", context)
