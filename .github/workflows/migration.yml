@@ -6,7 +6,12 @@ on:
       - main
     paths:
       - "snippet/migrations/**"
-
+  workflow_dispatch: # Allow manual triggering of the workflow
+    inputs:
+      run_type:
+        description: "Specify run type for migrations"
+        required: false
+        default: "automatic"
 jobs:
   migrate:
     runs-on: ubuntu-latest
