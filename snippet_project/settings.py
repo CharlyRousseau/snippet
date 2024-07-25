@@ -5,6 +5,7 @@ from django.core.management.utils import get_random_secret_key
 import os
 from dotenv import load_dotenv
 import mimetypes
+from decouple import config
 
 mimetypes.add_type("text/css", ".css", True)
 
@@ -23,7 +24,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["snippet.playground-charly.fr", "127.0.0.1", "localhost"]
 
-CSRF_TRUSTED_ORIGINS = ["https://snippet.playground-charly.fr"]
 
 # Application definition
 
@@ -80,23 +80,12 @@ STATICFILES_DIRS = [
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if DATABASE_URL:
-    import dj_database_url
-
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL, conn_max_age=600, ssl_require=True
-        )
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
-    }
+}
 
 
 # Password validation
@@ -144,27 +133,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media Configuration
-IS_PRODUCTION = os.getenv("DJANGO_PRODUCTION", "False") == "True"
 
-if IS_PRODUCTION:
-    # Production settings (using MinIO or S3)
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-    AWS_ACCESS_KEY_ID = os.getenv("MINIO_ACCESS_KEY")
-    AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_SECRET_KEY")
-    AWS_STORAGE_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME")
-    AWS_S3_ENDPOINT_URL = os.getenv("MINIO_ENDPOINT_URL")
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
-    AWS_QUERYSTRING_AUTH = False
-
-    # MEDIA_URL should not include the bucket name directly
-    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
-else:
-    # Local development settings (using local filesystem)
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Extending User
 
@@ -177,3 +148,13 @@ handler400 = "snippet.view.custom_bad_request"
 handler403 = "snippet.view.custom_permission_denied"
 handler404 = "snippet.view.custom_page_not_found"
 handler500 = "snippet.view.custom_internal_error"
+
+#smtp server
+
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
