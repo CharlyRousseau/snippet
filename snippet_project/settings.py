@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from django.conf.urls import handler400, handler404, handler403, handler500
+from django.core.management.utils import get_random_secret_key
 import os
 from dotenv import load_dotenv
 import mimetypes
@@ -15,10 +16,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-)esj&iv!ciu8c+)-j@2m4gjs1)id!m6duc6%6u&+r2$$^i^%@5"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["snippet.playground-charly.fr", "127.0.0.1", "localhost"]
 

@@ -34,6 +34,11 @@ spec:
               value: "True"
             - name: DJANGO_SETTINGS_MODULE
               value: "snippet_project.settings"
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snippet-secrets
+                  key: DJANGO_SECRET_KEY
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
