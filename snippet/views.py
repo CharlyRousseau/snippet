@@ -113,7 +113,7 @@ def snippet_detail(request, pk):
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect(reverse("home"))  # Redirect to your home URL name
+        return redirect(reverse("home"))
 
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
@@ -121,10 +121,16 @@ def signup(request):
             user = form.save()
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=user.username, password=raw_password)
-            login(request, user)
-            return redirect("snippet_list")
+            if user is not None:
+                login(request, user)
+                return redirect(reverse("snippet_list"))
+            else:
+                return render(request, "registration/signup.html", {"form": form, "error": "Authentication failed"})
+        else:
+            return render(request, "registration/signup.html", {"form": form})
     else:
         form = CustomUserCreationForm()
+
     return render(request, "registration/signup.html", {"form": form})
 
 
