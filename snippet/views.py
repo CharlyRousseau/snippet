@@ -257,18 +257,18 @@ def generate_snippet(request):
 
                 prompt = PromptTemplate(
                     template=TEMPLATE_PROMPT,
-                    input_variables=["query"],
+                    input_variables=["query", "language", "problem_type", "explanation"],
                 )
                 chain = prompt | model
-         
+
                 try:
-                    response = chain.invoke({"query": query})
+                    response = chain.invoke({"query": query, "language": language, "problem_type": problem_type, "explanation": explanation})
 
                     snippetGenerated = response.content
                     code_block_pattern = re.compile(
                         r"^```(?:\w+)?\n(.*)\n```$", re.DOTALL
                     )
-                  
+
                     match = code_block_pattern.match(snippetGenerated)  # type: ignore
 
                     if match:
@@ -299,11 +299,7 @@ def generate_snippet(request):
                     return redirect(reverse("generate_snippet"))
         else:
             snippet_form = SnippetSaveForm(request.POST)
-            print(snippet_form.data)
-            print("-------------------")
-            print(snippet_form.errors)
             if snippet_form.is_valid():
-                print("oui")
                 snippet_instance = snippet_form.save(commit=True)
                 snippet_instance.author = request.user
                 snippet_instance.save()
