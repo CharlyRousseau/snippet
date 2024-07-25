@@ -18,6 +18,10 @@ urlpatterns = [
     path("liked/", views.liked_snippet_list, name="liked_snippet_list"),
     path('like/<int:snippet_id>/', views.like_snippet, name='like_snippet'),
     path('is_liked/<int:snippet_id>', views.is_snippet_liked, name='is_snippet_liked'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='reset_password/password_reset_form.html'), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='reset_password/password_reset_done.html'), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='reset_password/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='reset_password/password_reset_complete.html'), name='password_reset_complete'),
 ]
 
 # 4XX/5XX Handling
