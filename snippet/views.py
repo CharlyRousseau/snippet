@@ -75,7 +75,7 @@ def signup(request):
             user = authenticate(username=user.username, password=raw_password)
             if user is not None:
                 login(request, user)
-                return redirect(reverse("snippet_list"))
+                return redirect(reverse("snippet_filter_list"))
             else:
                 return render(request, "registration/signup.html", {"form": form, "error": "Authentication failed"})
         else:
