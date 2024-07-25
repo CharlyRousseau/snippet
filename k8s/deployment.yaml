@@ -63,6 +63,27 @@ spec:
                 secretKeyRef:
                   name: minio-secrets
                   key: secret_key
+            - name: EMAIL_HOST
+              value: 'smtp.gmail.com'
+            - name: EMAIL_PORT
+              value: 587
+            - name: EMAIL_USE_TLS
+              value: "True"
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                 name: snippet-secrets
+                 key: EMAIL_HOST_USER
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                 name: snippet-secrets
+                 key: EMAIL_HOST_PASSWORD
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                secretKeyRef:
+                 name: snippet-secrets
+                 key: DEFAULT_FROM_EMAIL
       volumes:
         - name: static-files
           persistentVolumeClaim:
