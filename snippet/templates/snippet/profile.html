@@ -8,8 +8,9 @@
 
     <div class="main-container">
         <h1>Profile Page</h1>
-        <p>Welcome, {{ user.username }}!</p>
-        <p>Email: {{ user.email }}</p>
+        <p>Welcome, {{ user.first_name }}</p>
+        <p>Your username: {{ user.username }}</p>
+        <p>Your email: {{ user.email }}</p>
         <div class="profile-button">
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
