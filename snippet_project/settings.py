@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["snippet.playground-charly.fr", "127.0.0.1", "localhost"]
 
@@ -28,7 +28,7 @@ CSRF_TRUSTED_ORIGINS = ["https://snippet.playground-charly.fr"]
 # Application definition
 
 
-load_dotenv()
+load_dotenv(override=True)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
