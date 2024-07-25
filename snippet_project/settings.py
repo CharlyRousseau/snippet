@@ -28,7 +28,7 @@ CSRF_TRUSTED_ORIGINS = ["https://snippet.playground-charly.fr"]
 # Application definition
 
 
-load_dotenv(override=True)
+load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
