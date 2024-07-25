@@ -46,6 +46,7 @@ class Snippet(models.Model):
 
     def __str__(self):
         return self.title
+
     def retry_generation(self):
         self.attempts += 1
         self.generation_failed = False
