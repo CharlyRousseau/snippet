@@ -91,15 +91,22 @@ def like_snippet(request, snippet_id):
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"likes": snippet.num_like, "is_liked": is_snippet_liked})
-    return redirect(reverse("home"))
+    return redirect(reverse("for_you_list"))
 
 
 # Views
 
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect(reverse("for_you_list"))
+    return render(request, "snippet/home.html")
+
+
+@login_required
+def for_you(request):
     snippets = Snippet.objects.all()
-    return render(request, "snippet/home.html", {"snippets": snippets})
+    return render(request, "snippet/for_you_list.html", {"snippets": snippets})
 
 
 @login_required
@@ -154,7 +161,7 @@ def update_profile(request, username):
         form = UserEditForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-    
+
             return redirect(reverse("profile"))
     else:
         form = UserEditForm(instance=user)
@@ -214,11 +221,11 @@ def generate_snippet(request):
     form = SnippetGenerationForm()
     snippet = None
     snippet_content = ""
-    
-    if 'prompt_data' in request.session:
-        prompt_data = request.session['prompt_data']
+
+    if "prompt_data" in request.session:
+        prompt_data = request.session["prompt_data"]
         form = SnippetGenerationForm(initial=prompt_data)
-        del request.session['prompt_data']  
+        del request.session["prompt_data"]
         context = {"form": form, "snippet": snippet, "snippet_form": SnippetSaveForm()}
 
     if request.method == "POST":
@@ -230,7 +237,7 @@ def generate_snippet(request):
                 explanation = form.cleaned_data["explanation"]
 
                 api_key = settings.OPENAI_API_KEY
-        
+
                 model = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key=api_key)
 
                 TEMPLATE_PROMPT = """
@@ -257,12 +264,24 @@ def generate_snippet(request):
 
                 prompt = PromptTemplate(
                     template=TEMPLATE_PROMPT,
-                    input_variables=["query", "language", "problem_type", "explanation"],
+                    input_variables=[
+                        "query",
+                        "language",
+                        "problem_type",
+                        "explanation",
+                    ],
                 )
                 chain = prompt | model
 
                 try:
-                    response = chain.invoke({"query": query, "language": language, "problem_type": problem_type, "explanation": explanation})
+                    response = chain.invoke(
+                        {
+                            "query": query,
+                            "language": language,
+                            "problem_type": problem_type,
+                            "explanation": explanation,
+                        }
+                    )
 
                     snippetGenerated = response.content
                     code_block_pattern = re.compile(
@@ -273,12 +292,11 @@ def generate_snippet(request):
 
                     if match:
                         snippet_content = match.group(1).strip()
-                    
 
                     snippet = Snippet(
                         author=request.user, language=language, code=snippet_content
                     )
-                
+
                     context = {
                         "snippet": snippet,
                         "form": form,
@@ -290,12 +308,12 @@ def generate_snippet(request):
                     return render(request, "snippet/generated_snippet.html", context)
 
                 except Exception as e:
-                    messages.error(request, "Une erreur s'est produite. Veuillez réessayer. \n " + str(e))
-                    request.session['prompt_data'] = {
-                        'language': language,
-                        'problem_type': problem_type,
-                        'explanation': explanation
+                    request.session["prompt_data"] = {
+                        "language": language,
+                        "problem_type": problem_type,
+                        "explanation": explanation,
                     }
+
                     return redirect(reverse("generate_snippet"))
         else:
             snippet_form = SnippetSaveForm(request.POST)
@@ -306,7 +324,6 @@ def generate_snippet(request):
 
                 messages.success(request, "Snippet saved successfully!")
 
-    
                 return redirect(reverse("snippet_filter_list"))
 
     context = {"form": form, "snippet": snippet, "snippet_form": SnippetSaveForm()}

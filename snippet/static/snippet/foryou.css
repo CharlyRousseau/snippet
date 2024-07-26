@@ -1,0 +1,39 @@
+.like-button {
+    display: inline-flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    color: black;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+button:hover {
+    color: red;
+}
+
+.like-icon.filled {
+    fill: red;
+}
+
+.text {
+    padding: 0px 16px;
+}
+
+.snippet-card {
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-top: 0.5px solid #ddd;
+}
+.for-you {
+    width: 100%;
+}
