@@ -11,6 +11,12 @@
             <br>
             <ul class="navbar-menu">
                 <li>
+                    <a href="{% url 'home' %}" class="navbar-item">
+                        <i data-lucide="house-plug" class="lucide lucide-code"></i>
+                        <span>For You</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'snippet_filter_list' %}" class="navbar-item">
                         <i data-lucide="square-dashed-bottom-code" class="lucide lucide-code"></i>
                         <span>Saved</span>
@@ -36,7 +42,7 @@
                 </form>
             </a>
             <li>
-                <a href="{% url 'generate_snippet' %}" class="navbar-item">
+                <a href="{% url 'generate_snippet' %}" class="navbar-item generate">
                     <i data-lucide="terminal" class="lucide lucide-activity"></i>
                     <span>Generate</span>
                 </a>
