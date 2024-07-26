@@ -10,12 +10,16 @@
     {% if snippets %}
         <div class="for you">
             {% for snippet in snippets %}
-                <div class="snippet-card">
-                    <div class="text">
-                        <h2>{{ snippet.title }}</h2>
-                        <p>{{ snippet.author }}</p>
-                        <p>{{ snippet.created_at  }}</p>
-                    </div >
+                <a href="{% url 'snippet_detail' snippet.pk %}">
+                    <div class="snippet-card">
+                        <div class="text">
+                            <h2>{{ snippet.title }}</h2>
+                            <p>{{ snippet.author }}</p>
+                            <p>{{ snippet.created_at  }}</p>
+                            <p>{{ snippet.code  }}</p>
+                        </div >
+                    </a>
+
                     {% if user.is_authenticated %}
                         <button class="like-button" data-id="{{ snippet.id }}" id="like-btn-{{ snippet.id }}">
                             <i data-lucide="heart" class="like-icon {% if snippet.id in liked_snippet_ids %}filled{% endif %}"></i>

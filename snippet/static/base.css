@@ -94,6 +94,17 @@ a:hover {
     background-color: #e9ecef;
 }
 
+.generate {
+    background: black;
+    color: white;
+}
+.generate:hover {
+    background: #333; /* Slightly lighter black */
+    color: white;
+}
+.generate span {
+    color: white;
+}
 .profile {
     display: flex;
     align-items: center;
