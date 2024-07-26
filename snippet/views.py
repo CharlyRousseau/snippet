@@ -9,7 +9,7 @@ from .forms import SnippetSaveForm, UserEditForm
 from .models import CustomUser, Snippet
 import django_filters
 import re
-from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -17,17 +17,15 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied, BadRequest
 import logging
 
-logger = logging.getLogger(__name__)
-
+logger: logging.Logger = logging.getLogger(__name__)
 
 # FilterViews
 
-
 class SnippetFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(
+    title: django_filters.CharFilter = django_filters.CharFilter(
         field_name="title", lookup_expr="icontains", label="Title"
     )
-    language = django_filters.ChoiceFilter(
+    language: django_filters.ChoiceFilter = django_filters.ChoiceFilter(
         field_name="language",
         choices=[language for language in languages],
         lookup_expr="iexact",
@@ -36,20 +34,20 @@ class SnippetFilter(django_filters.FilterSet):
 
     class Meta:
         model = Snippet
-        fields = ["title"]
+        fields: list[str] = ["title"]
 
 
 @login_required
-def snippet_filter_list(request):
-    f = SnippetFilter(request.GET, queryset=Snippet.objects.all())
+def snippet_filter_list(request) -> HttpResponse:
+    f: SnippetFilter = SnippetFilter(request.GET, queryset=Snippet.objects.filter(author=request.user))
     return render(request, "snippet/snippet_filter_list.html", {"filter": f})
 
 
 @login_required
-def is_snippet_liked(request, snippet_id):
+def is_snippet_liked(request, snippet_id) -> JsonResponse:
     snippet = get_object_or_404(Snippet, id=snippet_id)
-    liked = LikedSnippets.objects.filter(user=request.user).first()
-    is_snippet_liked = False
+    liked: LikedSnippets | None = LikedSnippets.objects.filter(user=request.user).first()
+    is_snippet_liked: bool = False
 
     if liked:
         # LikedSnippet already exists, we just need to verify if the snippet is liked or not
@@ -60,12 +58,12 @@ def is_snippet_liked(request, snippet_id):
 
 
 @login_required
-def like_snippet(request, snippet_id):
+def like_snippet(request, snippet_id) -> (JsonResponse | HttpResponseRedirect | HttpResponsePermanentRedirect):
     # First, get the snippet
     snippet = get_object_or_404(Snippet, id=snippet_id)
     # Then, verify if we already liked this snippet or not (verify if the snippet is present in the LikedSnippet)
-    liked = LikedSnippets.objects.filter(user=request.user).first()
-    is_snippet_liked = False
+    liked: LikedSnippets | None = LikedSnippets.objects.filter(user=request.user).first()
+    is_snippet_liked: bool = False
 
     if liked:
         # LikedSnippet already exists, we just need to verify if the snippet is liked or not
@@ -110,8 +108,8 @@ def for_you(request):
 
 
 @login_required
-def liked_snippet_list(request):
-    liked = LikedSnippets.objects.filter(user=request.user).first()
+def liked_snippet_list(request) -> (HttpResponse | HttpResponseRedirect | HttpResponsePermanentRedirect):
+    liked: LikedSnippets | None = LikedSnippets.objects.filter(user=request.user).first()
     if liked:
         snippets = liked.snippets_liked.all()
         return render(
@@ -121,17 +119,17 @@ def liked_snippet_list(request):
         return redirect(reverse("home"))
 
 
-def snippet_detail(request, pk):
+def snippet_detail(request, pk) -> HttpResponse:
     snippet = get_object_or_404(Snippet, pk=pk)
     return render(request, "snippet/snippet_detail.html", {"snippet": snippet})
 
 
-def signup(request):
+def signup(request) -> (HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse):
     if request.user.is_authenticated:
         return redirect(reverse("home"))
 
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
+        form: CustomUserCreationForm = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             raw_password = form.cleaned_data.get("password1")
@@ -154,7 +152,7 @@ def signup(request):
 
 
 @login_required
-def update_profile(request, username):
+def update_profile(request, username) -> (HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse):
     user = get_object_or_404(CustomUser, username=username)
 
     if request.method == "POST":
@@ -172,22 +170,23 @@ def update_profile(request, username):
 # 4XX/5XX Handling
 
 
-def custom_bad_request(request, exception):
+def custom_bad_request(request, exception) -> HttpResponse:
     return render(request, "400.html", status=400)
 
 
-def custom_permission_denied(request, exception):
+def custom_permission_denied(request, exception) -> HttpResponse:
     return render(request, "403.html", status=403)
 
 
-def custom_page_not_found(request, exception):
+def custom_page_not_found(request, exception) -> HttpResponse:
     return render(request, "404.html", status=404)
 
 
-def custom_internal_error(request, exception=None):
+def custom_internal_error(request, exception=None) -> HttpResponse:
     logger.error("Internal Server Error: %s", exception, exc_info=True)
     return render(request, "500.html", {"error": exception}, status=500)
 
+# Only for debugging Error Handling
 
 def test_403(request):
     raise PermissionDenied
@@ -196,17 +195,18 @@ def test_403(request):
 def test_400(request):
     raise BadRequest
 
+# ----------------------------------
 
 @login_required
-def profile(request):
+def profile(request) -> HttpResponse:
     return render(request, "snippet/profile.html")
 
 
 class CustomLoginView(LoginView):
-    template_name = "registration/login.html"
+    template_name: str = "registration/login.html"
     success_url = reverse_lazy("home")
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> (HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse):
         if self.request.user.is_authenticated:
             return redirect(self.success_url)
         else:
@@ -215,12 +215,11 @@ class CustomLoginView(LoginView):
 
 from .forms import SnippetGenerationForm
 
-
 @login_required
-def generate_snippet(request):
-    form = SnippetGenerationForm()
-    snippet = None
-    snippet_content = ""
+def generate_snippet(request) -> (HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse):
+    form: SnippetGenerationForm = SnippetGenerationForm()
+    snippet: Snippet | None = None
+    snippet_content: str = ""
 
     if "prompt_data" in request.session:
         prompt_data = request.session["prompt_data"]

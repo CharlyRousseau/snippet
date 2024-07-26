@@ -1,11 +1,10 @@
-from django.urls import path
-from snippet_project.settings import DEBUG
+from django.urls import URLPattern, path
 from . import views
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 
 
-urlpatterns = [
+urlpatterns: list[URLPattern] = [
     path("", views.snippet_filter_list, name="snippet_filter_list"),
     path("snippet/<int:pk>/", views.snippet_detail, name="snippet_detail"),
     path("login/", views.CustomLoginView.as_view(), name="login"),

@@ -14,7 +14,6 @@ class CustomUserChangeForm(UserChangeForm):
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta): # type: ignore
         model = CustomUser
-        # exclude = ["username"]
         fields = UserCreationForm.Meta.fields + ("email", "first_name", "image") # type: ignore
 
     def clean_username(self):
