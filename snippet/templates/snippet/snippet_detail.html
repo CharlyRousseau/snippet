@@ -20,6 +20,10 @@
                 <pre class="codeContainer"><code class="{{ snippet.language }} codeSnippet">{{ snippet.code }}</code></pre >
             </div >
         </div >
+        {% if user.username == snippet.author.username or user.is_superuser %}
+            <a href="{% url 'delete_snippet' snippet.pk %}">Delete</a>
+        {% endif %}
+    </div>
     {% endblock %}
 
     {% block extra_scripts %}

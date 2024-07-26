@@ -123,6 +123,11 @@ def snippet_detail(request, pk) -> HttpResponse:
     snippet = get_object_or_404(Snippet, pk=pk)
     return render(request, "snippet/snippet_detail.html", {"snippet": snippet})
 
+@login_required
+def delete_snippet(request, pk) -> HttpResponse:
+    snippet = get_object_or_404(Snippet, pk=pk)
+    snippet.delete()
+    return redirect(reverse("home"))
 
 def signup(request) -> (HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse):
     if request.user.is_authenticated:

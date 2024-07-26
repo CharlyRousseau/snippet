@@ -18,6 +18,7 @@ urlpatterns: list[URLPattern] = [
     path("liked/", views.liked_snippet_list, name="liked_snippet_list"),
     path("like/<int:snippet_id>/", views.like_snippet, name="like_snippet"),
     path("is_liked/<int:snippet_id>", views.is_snippet_liked, name="is_snippet_liked"),
+    path("snippet/delete/<int:pk>", views.delete_snippet, name="delete_snippet"),
     path(
         "password_reset/",
         auth_views.PasswordResetView.as_view(
