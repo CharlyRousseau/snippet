@@ -5,6 +5,8 @@
 {% block extra_head %}
     <link rel="stylesheet" type="text/css" href="{% static 'snippet/foryou.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.css">
+
 {% endblock %}
 {% block content %}
     {% if snippets %}
@@ -16,7 +18,7 @@
                             <h2>{{ snippet.title }}</h2>
                             <p>{{ snippet.author }}</p>
                             <p>{{ snippet.created_at  }}</p>
-                            <p>{{ snippet.code  }}</p>
+                            <pre class="codeContainer"><code class="{{ snippet.language }} codeSnippet">{{ snippet.code }}</code></pre >
                         </div >
                     </a>
 
@@ -33,6 +35,8 @@
 {% endblock %}
 
 {% block extra_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>console.log("oui")</script>
     <script>
