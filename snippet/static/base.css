@@ -131,6 +131,21 @@ a:hover {
     overflow-y: auto;
 }
 
+.navbar-item.active {
+    font-weight: bold;
+    color: #000;
+}
+
+.navbar-item.active i {
+    font-weight: bold;
+    color: #000;
+}
+
+.navbar-item.active i,
+.navbar-item.active span {
+    animation: pulse 0.5s ease-in-out;
+}
+
 @media (max-width: 768px) {
     .navbar {
         width: 200px;
