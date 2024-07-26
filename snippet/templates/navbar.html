@@ -1,0 +1,65 @@
+{% load static %}
+
+<div class="main-layout">
+    <div class="navbar">
+        <div>
+            <div class="navbar-header">
+                <a href="{% url 'home' %}" >
+                    <h1>Snippet</h1>
+                </a>
+            </div>
+            <br>
+            <ul class="navbar-menu">
+                <li>
+                    <a href="{% url 'snippet_filter_list' %}" class="navbar-item">
+                        <i data-lucide="square-dashed-bottom-code" class="lucide lucide-code"></i>
+                        <span>Saved</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'liked_snippet_list' %}" class="navbar-item">
+                        <i data-lucide="heart" class="lucide lucide-heart"></i>
+                        <span>Liked</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        <ul class="navbar-footer">
+            <a class="navbar-item">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="button-transparent" type="submit">
+                        <i data-lucide="log-out" class="lucide lucide-log-out"></i>
+                        Logout
+                    </button>
+                </form>
+            </a>
+            <li>
+                <a href="{% url 'generate_snippet' %}" class="navbar-item">
+                    <i data-lucide="terminal" class="lucide lucide-activity"></i>
+                    <span>Generate</span>
+                </a>
+            </li>
+
+            {% if user.image and user.image.url %}
+                <a href="{% url 'profile' %}" class="profile">
+                    <div class="profile-pic">
+                        <img src="{{ user.image.url }}" alt="Profile Picture" class="profile-pic-img">
+                    </div>
+                </a>
+            {% else %}
+                <a href="{% url 'profile' %}" class="profile">
+                    <div class="profile-pic">
+                        <img src="{% static 'default_profil.png' %}" alt="Default Profile Picture" class="profile-pic-img">
+                    </div>
+                </a>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>

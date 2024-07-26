@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'snippet/foryou.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+{% block content %}
+    {% if snippets %}
+        <div class="for you">
+            {% for snippet in snippets %}
+                <div class="snippet-card">
+                    <div class="text">
+                        <h2>{{ snippet.title }}</h2>
+                        <p>{{ snippet.author }}</p>
+                        <p>{{ snippet.created_at  }}</p>
+                    </div >
+                    {% if user.is_authenticated %}
+                        <button class="like-button" data-id="{{ snippet.id }}" id="like-btn-{{ snippet.id }}">
+                            <i data-lucide="heart" class="like-icon {% if snippet.id in liked_snippet_ids %}filled{% endif %}"></i>
+                            <span id="likes-{{ snippet.id }}">{{ snippet.num_like }}</span>
+                        </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div >
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>console.log("oui")</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons(); // Initialize Lucide icons
+
+            $(document).ready(function() {
+            // Iterate over each button with the class 'like-button'
+                $('.like-button').each(function() {
+                    var snippetId = $(this).data('id');
+
+                // Perform AJAX call for each button
+                    $.ajax({
+                        url: "{% url 'is_snippet_liked' snippet_id=0 %}".replace('0', snippetId),
+                        type: 'POST',
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            $('#likes-' + snippetId).text(response.likes);
+                        // Toggle heart icon color based on whether it's liked
+                            var icon = $('#like-btn-' + snippetId + ' .like-icon');
+                            icon.toggleClass('filled', response.is_liked);
+                        }
+                    });
+                });
+
+                $('.like-button').click(function() {
+                    var snippetId = $(this).data('id');
+                    $.ajax({
+                        url: "{% url 'like_snippet' snippet_id=0 %}".replace('0', snippetId),
+                        type: 'POST',
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            $('#likes-' + snippetId).text(response.likes);
+                            var icon = $('#like-btn-' + snippetId + ' .like-icon');
+                            icon.toggleClass('filled', response.is_liked);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}
